@@ -33,3 +33,26 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+
+    guzzle:
+        class: GuzzleHttp\Client
+
+    guzzle_client:
+        class: AppBundle\Service\Http\GuzzleHttpClient
+        arguments:
+            - '@guzzle'
+
+    cbr_parser:
+        class: AppBundle\Service\Parser\CbrParser
+        arguments:
+            - '@guzzle_client'
+
+    AppBundle\Command\ParserCommand:
+        calls:
+            - method: setParser
+              arguments:
+                  - '@cbr_parser'
+
+            - method: setEntity
+              arguments:
+                  - '@doctrine.orm.entity_manager'

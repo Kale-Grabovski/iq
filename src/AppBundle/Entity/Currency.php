@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -43,12 +44,20 @@ class Currency
     private $nominal;
 
     /**
-     * @var string
+     * @var ArrayCollection
      *
-     * @ORM\Column(name="value", type="decimal", precision=4, scale=4)
+     * @ORM\OneToMany(targetEntity="Rate", mappedBy="currency")
      */
-    private $value;
+    private $rates;
 
+
+    /**
+     * Currency constructor.
+     */
+    public function __construct()
+    {
+        $this->rates = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -133,27 +142,36 @@ class Currency
     }
 
     /**
-     * Set value
+     * Add rate
      *
-     * @param string $value
+     * @param \AppBundle\Entity\Rate $rate
      *
      * @return Currency
      */
-    public function setValue($value)
+    public function addRate(\AppBundle\Entity\Rate $rate)
     {
-        $this->value = $value;
+        $this->rates[] = $rate;
 
         return $this;
     }
 
     /**
-     * Get value
+     * Remove rate
      *
-     * @return string
+     * @param \AppBundle\Entity\Rate $rate
      */
-    public function getValue()
+    public function removeRate(\AppBundle\Entity\Rate $rate)
     {
-        return $this->value;
+        $this->rates->removeElement($rate);
+    }
+
+    /**
+     * Get rates
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRates()
+    {
+        return $this->rates;
     }
 }
-
