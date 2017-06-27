@@ -121,10 +121,10 @@ class Rate
     /**
      * Get value
      *
-     * @return string
+     * @return float
      */
     public function getValue()
     {
-        return $this->value;
+        return (float)$this->value;
     }
 }

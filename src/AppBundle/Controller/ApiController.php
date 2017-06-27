@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApiController
@@ -34,8 +35,12 @@ class ApiController extends Controller
     /**
      * @Route("/rates/{code}/{date}", name="rates", requirements={"code": "\w{3}", "date": "\d{8}"})
      * @Method({"GET"})
+     *
+     * @param  string   $code Currency code
+     * @param  int      $date Date in YYYYmmdd format
+     * @return Response
      */
-    public function ratesAction($code, $date)
+    public function ratesAction(string $code, int $date) : Response
     {
         $date = new DateTime($date);
 
@@ -48,9 +53,9 @@ class ApiController extends Controller
             $rate = $this->getRateByCodeAndDate($code, $date);
         }
 
-        var_dump($rate ? $rate->getValue() : 'hz'); exit;
-
-        return $currency;
+        return $this->container->get('api_response')->output([
+            'rate' => $rate->getValue(),
+        ]);
     }
 
     /**
