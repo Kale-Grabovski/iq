@@ -2,7 +2,10 @@
 
 namespace AppBundle\Service\Parser;
 
-use Symfony\Component\DomCrawler\Crawler;
+use AppBundle\Service\Http\HttpClientInterface;
+use AppBundle\Service\Parser\Xml\XmlInterface;
+use DateTime;
+use Generator;
 
 /**
  * Class CbrParser
@@ -19,45 +22,34 @@ class CbrParser extends AbstractParser
     const URL = 'http://www.cbr.ru/scripts/XML_daily.asp?date_req=';
 
     /**
-     * @inheritdoc
-     * @return array
+     * @var XmlInterface
      */
-    public function getRates(string $date) : array
+    private $xmlParser;
+
+    /**
+     * @param HttpClientInterface $httpClient
+     * @param XmlInterface        $xmlParser
+     */
+    public function __construct(HttpClientInterface $httpClient, XmlInterface $xmlParser)
+    {
+        $this->xmlParser = $xmlParser;
+        parent::__construct($httpClient);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRates(DateTime $date) : Generator
     {
         $xmlBody = $this->httpClient->getBody(self::URL . $this->convertDate($date));
-        return $this->convertRates($xmlBody);
+        return $this->xmlParser->parse($xmlBody);
     }
 
     /**
      * @inheritdoc
-     * @param string $date
-     * @return string
      */
-    protected function convertDate(string $date) : string
+    protected function convertDate(DateTime $date) : string
     {
-        return date('d/m/Y', strtotime($date));
-    }
-
-    /**
-     * Converts XML into an array with currencies info
-     *
-     * @param string $body XML response with currency rates
-     * @return array
-     */
-    private function convertRates(string $body) : array
-    {
-        $crawler = new Crawler($body);
-
-        $rates = [];
-        foreach ($crawler->filter('Valute') as $rate) {
-            $rates[] = [
-                'code'    => $rate->childNodes[3]->nodeValue,
-                'nominal' => $rate->childNodes[5]->nodeValue,
-                'name'    => $rate->childNodes[7]->nodeValue,
-                'value'   => str_replace(',', '.', $rate->childNodes[9]->nodeValue),
-            ];
-        }
-
-        return $rates;
+        return $date->format('d/m/Y');
     }
 }

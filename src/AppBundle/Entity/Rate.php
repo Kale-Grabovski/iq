@@ -3,11 +3,12 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
 /**
  * Rate
  *
- * @ORM\Table(name="rate")
+ * @ORM\Table(name="rate", uniqueConstraints={@UniqueConstraint(name="cu_date", columns={"currency_id", "created_at"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\RateRepository")
  */
 class Rate
@@ -33,7 +34,7 @@ class Rate
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="created_at", type="datetime")
+     * @ORM\Column(name="created_at", type="date")
      */
     private $createdAt;
 
@@ -58,13 +59,13 @@ class Rate
     /**
      * Set currencyId
      *
-     * @param integer $currencyId
+     * @param  Currency $currency
      *
      * @return Rate
      */
-    public function setCurrencyId($currencyId)
+    public function setCurrency(Currency $currency)
     {
-        $this->currencyId = $currencyId;
+        $this->currencyId = $currency->getId();
 
         return $this;
     }

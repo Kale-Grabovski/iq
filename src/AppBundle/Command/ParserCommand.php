@@ -2,13 +2,23 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\Currency;
+use AppBundle\Entity\Rate;
 use AppBundle\Service\Parser\ParserInterface;
-use Doctrine\ORM\EntityManager;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class ParserCommand
+ *
+ * Performs currencies parsing from Central Bank of Russia.
+ *
+ * @package AppBundle\Command
+ */
 class ParserCommand extends ContainerAwareCommand
 {
     /**
@@ -17,7 +27,7 @@ class ParserCommand extends ContainerAwareCommand
     private $parser;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $entityManager;
 
@@ -30,13 +40,16 @@ class ParserCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      */
-    public function setEntity(EntityManager $entityManager)
+    public function setEntity(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * Configures the parser command
+     */
     protected function configure()
     {
         $this
@@ -45,15 +58,22 @@ class ParserCommand extends ContainerAwareCommand
             ->addOption('date', null, InputOption::VALUE_REQUIRED, 'Date for which we want to know the rates');
     }
 
+    /**
+     * @param  InputInterface  $input
+     * @param  OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $rates = $this->parser->getRates($input->getOption('date'));
-        $this->saveRates($rates);
-    }
+        $date = new DateTime($input->getOption('date'));
 
-    private function saveRates(array $rates)
-    {
-        $currencies = $this->entityManager->getRepository('AppBundle:Currency')->findAll();
-        echo '<pre>'; var_dump($currencies); exit;
+        foreach ($this->parser->getRates($date) as $rate) {
+            $this->entityManager->beginTransaction();
+
+            $currency = $this->entityManager->getRepository(Currency::class)->getCreateCurrency($rate);
+            $this->entityManager->getRepository(Rate::class)->getCreateRate($currency, $rate['value'], $date);
+
+            $this->entityManager->commit();
+        }
     }
 }

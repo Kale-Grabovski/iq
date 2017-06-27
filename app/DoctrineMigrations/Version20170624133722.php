@@ -18,9 +18,12 @@ class Version20170624133722 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
-        $this->addSql('CREATE TABLE rate (id INT NOT NULL, currency_id INT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, value NUMERIC(8, 4) NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE currency (id INT NOT NULL, code VARCHAR(3) NOT NULL, name VARCHAR(64) NOT NULL, nominal INT NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_6956883F77153098 ON currency (code)');
+        $this->addSql('CREATE TABLE rate (id INT NOT NULL, currency_id INT NOT NULL, created_at DATE NOT NULL, value NUMERIC(8, 4) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE currency (id INT NOT NULL, code VARCHAR(3) NOT NULL, name text NOT NULL, nominal INT NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE SEQUENCE rate_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE currency_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE UNIQUE INDEX uniq_currency_code ON currency (code)');
+        $this->addSql('CREATE UNIQUE INDEX uniq_rates_currency_id_created_at ON rate (currency_id, created_at)');
         $this->addSql('ALTER TABLE rate ADD FOREIGN KEY (currency_id) REFERENCES currency(id)');
     }
 

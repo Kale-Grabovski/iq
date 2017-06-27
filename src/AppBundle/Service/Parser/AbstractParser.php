@@ -3,6 +3,7 @@
 namespace AppBundle\Service\Parser;
 
 use AppBundle\Service\Http\HttpClientInterface;
+use DateTime;
 
 /**
  * Class AbstractParser
@@ -25,10 +26,10 @@ abstract class AbstractParser implements ParserInterface
     }
 
     /**
-     * Converts the date into appropriate for API format
+     * Converts the date into appropriate format for API
      *
-     * @param string $date
+     * @param  DateTime $date
      * @return string
      */
-    abstract protected function convertDate(string $date) : string;
+    abstract protected function convertDate(DateTime $date) : string;
 }
