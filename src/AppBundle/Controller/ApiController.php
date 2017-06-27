@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Rate;
 use AppBundle\Exceptions\RateNotFoundException;
-use AppBundle\Service\Parser\Rate\RateInterface;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
