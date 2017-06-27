@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
 	php7.1-pgsql \
 	php7.1-zip \
 	postgresql \
+	nginx \
 	vim
 
 # Composer
@@ -33,4 +34,5 @@ RUN composer install
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
-ENTRYPOINT service postgresql start && /bin/bash
+# I'm sure it should be better way to start daemons
+ENTRYPOINT service postgresql start && service nginx start && service php7.1-fpm start && /bin/bash

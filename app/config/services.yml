@@ -49,12 +49,16 @@ services:
             - '@guzzle_client'
             - '@xml_parser'
 
+    rate_processor:
+        class: AppBundle\Service\Parser\Rate\RateProcessor
+        public: true
+        arguments:
+            - '@cbr_parser'
+            - '@doctrine.orm.entity_manager'
+
     AppBundle\Command\ParserCommand:
         calls:
-            - method: setParser
+            - method: setRatesProcessor
               arguments:
-                  - '@cbr_parser'
+                  - '@rate_processor'
 
-            - method: setEntity
-              arguments:
-                  - '@doctrine.orm.entity_manager'

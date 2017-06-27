@@ -3,6 +3,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\Currency;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -20,11 +21,9 @@ class CurrencyRepository extends EntityRepository
      */
     public function getCreateCurrency(array $currencyData) : Currency
     {
-        $currency = $this->getEntityManager()
-            ->getRepository(Currency::class)
-            ->findOneByCode($currencyData['code']);
-
-        if (!$currency) {
+        try {
+            $currency = $this->getByCode($currencyData['code']);
+        } catch (EntityNotFoundException $e) {
             $currency = $this->createCurrency($currencyData);
         }
 
@@ -46,6 +45,26 @@ class CurrencyRepository extends EntityRepository
 
         $this->getEntityManager()->persist($currency);
         $this->getEntityManager()->flush();
+
+        return $currency;
+    }
+
+    /**
+     * Returns a currency by its code
+     *
+     * @param  string   $code
+     * @return Currency
+     * @throws EntityNotFoundException
+     */
+    public function getByCode(string $code) : Currency
+    {
+        $currency = $this->getEntityManager()
+            ->getRepository(Currency::class)
+            ->findOneByCode(strtoupper($code));
+
+        if (!$currency) {
+            throw new EntityNotFoundException("Currency with code $code not found");
+        }
 
         return $currency;
     }

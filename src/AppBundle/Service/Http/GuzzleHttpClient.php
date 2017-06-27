@@ -3,6 +3,7 @@
 namespace AppBundle\Service\Http;
 
 use GuzzleHttp\Client;
+use HttpException;
 
 /**
  * Class GuzzleHttpClient
@@ -18,6 +19,9 @@ class GuzzleHttpClient implements HttpClientInterface
      */
     private $guzzle;
 
+    /**
+     * @param Client $guzzle
+     */
     public function __construct(Client $guzzle)
     {
         $this->guzzle = $guzzle;
@@ -25,15 +29,13 @@ class GuzzleHttpClient implements HttpClientInterface
 
     /**
      * @inheritdoc
-     * @param  string $url URL to be fetched
-     * @return string
      */
     public function getBody(string $url) : string
     {
         $res = $this->guzzle->request('GET', $url);
 
         if ($res->getStatusCode() !== static::STATUS_OK) {
-            throw new \HttpException('Could not get info by url: ' . $url);
+            throw new HttpException('Could not get info by url: ' . $url);
         }
 
         return $res->getBody();

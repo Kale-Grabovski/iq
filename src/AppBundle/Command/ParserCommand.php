@@ -2,11 +2,8 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Entity\Currency;
-use AppBundle\Entity\Rate;
-use AppBundle\Service\Parser\ParserInterface;
+use AppBundle\Service\Parser\Rate\RateInterface;
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,29 +19,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ParserCommand extends ContainerAwareCommand
 {
     /**
-     * @var ParserInterface
+     * @var RateInterface
      */
-    private $parser;
+    private $rateProcessor;
 
     /**
-     * @var EntityManagerInterface
+     * @param RateInterface $rateProcessor
      */
-    private $entityManager;
-
-    /**
-     * @param ParserInterface $parser
-     */
-    public function setParser(ParserInterface $parser)
+    public function setRatesProcessor(RateInterface $rateProcessor)
     {
-        $this->parser = $parser;
-    }
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     */
-    public function setEntity(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+        $this->rateProcessor = $rateProcessor;
     }
 
     /**
@@ -66,14 +50,6 @@ class ParserCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $date = new DateTime($input->getOption('date'));
-
-        foreach ($this->parser->getRates($date) as $rate) {
-            $this->entityManager->beginTransaction();
-
-            $currency = $this->entityManager->getRepository(Currency::class)->getCreateCurrency($rate);
-            $this->entityManager->getRepository(Rate::class)->getCreateRate($currency, $rate['value'], $date);
-
-            $this->entityManager->commit();
-        }
+        $this->rateProcessor->processRates($date);
     }
 }

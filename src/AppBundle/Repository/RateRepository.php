@@ -4,6 +4,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\Currency;
 use AppBundle\Entity\Rate;
+use AppBundle\Exceptions\RateNotFoundException;
 use DateTime;
 
 /**
@@ -24,6 +25,40 @@ class RateRepository extends \Doctrine\ORM\EntityRepository
     public function getCreateRate(Currency $currency, float $rateValue, DateTime $date) : Rate
     {
         /** @var Rate $rate */
+        $rate = $this->getByDateAndCurrency($currency, $date);
+        return $rate ?? $this->createRate($currency, $rateValue, $date);
+    }
+
+    /**
+     * Trying to find currency rate for passed date
+     *
+     * @param  string   $code
+     * @param  DateTime $date
+     * @return Rate
+     * @throws RateNotFoundException
+     */
+    public function getByCodeAndDate(string $code, DateTime $date) : Rate
+    {
+        $currency = $this->getEntityManager()->getRepository(Currency::class)->getByCode($code);
+        $rate     = $this->getByDateAndCurrency($currency, $date);
+
+        if (!$rate) {
+            throw new RateNotFoundException('Cant get currency rate');
+        }
+
+        return $rate;
+    }
+
+    /**
+     * Returns rate by currency and date
+     *
+     * @param  Currency $currency
+     * @param  DateTime $date
+     * @return Rate
+     */
+    private function getByDateAndCurrency(Currency $currency, DateTime $date) : ?Rate
+    {
+        /** @var Rate $rate */
         $rate = $this->getEntityManager()
             ->getRepository(Rate::class)
             ->findOneBy([
@@ -31,7 +66,7 @@ class RateRepository extends \Doctrine\ORM\EntityRepository
                 'currencyId' => $currency,
             ]);
 
-        return $rate ?? $this->createRate($currency, $rateValue, $date);
+        return $rate;
     }
 
     /**
