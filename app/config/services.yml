@@ -29,6 +29,9 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    ###################
+    # Custom services #
+    ###################
     guzzle:
         class: GuzzleHttp\Client
 

@@ -42,7 +42,7 @@ class CbrParser extends AbstractParser
     public function getRates(DateTime $date) : Generator
     {
         $xmlBody = $this->httpClient->getBody(self::URL . $this->convertDate($date));
-        return $this->xmlParser->parse($xmlBody);
+        yield from $this->xmlParser->parse($xmlBody);
     }
 
     /**
