@@ -50,6 +50,22 @@ class RateRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Removes rates by passed date
+     *
+     * @param DateTime $date
+     */
+    public function deleteRatesByDate(DateTime $date)
+    {
+        $rates = $this->getEntityManager()->getRepository(Rate::class)->findBy(['createdAt' => $date]);
+        if ($rates) {
+            foreach ($rates as $rate) {
+                $this->getEntityManager()->remove($rate);
+            }
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    /**
      * Returns rate by currency and date
      *
      * @param  Currency $currency

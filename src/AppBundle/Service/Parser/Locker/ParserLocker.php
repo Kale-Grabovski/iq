@@ -34,12 +34,4 @@ class ParserLocker implements LockerInterface
             sem_release($this->semLock);
         } catch (\Exception $e) {}
     }
-
-    /**
-     * To prevent eternal lock
-     */
-    public function __destruct()
-    {
-        $this->unlock();
-    }
 }

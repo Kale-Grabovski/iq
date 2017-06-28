@@ -24,7 +24,7 @@ class XmlCbrCrawler extends AbstractXmlCrawler
         foreach ($this->getCrawler($body)->filter('Valute') as $rate) {
             yield [
                 'code'    => $rate->childNodes[3]->nodeValue,
-                'nominal' => $rate->childNodes[5]->nodeValue,
+                'nominal' => (int)$rate->childNodes[5]->nodeValue,
                 'name'    => $rate->childNodes[7]->nodeValue,
                 'value'   => (float)str_replace(',', '.', $rate->childNodes[9]->nodeValue),
             ];
