@@ -26,6 +26,7 @@ class Rate
     /**
      * @var Currency
      *
+     * @ORM\Column(name="currency_id", type="integer")
      * @ORM\ManyToOne(targetEntity="Currency", inversedBy="rate")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      */

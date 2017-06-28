@@ -30,7 +30,9 @@ class ParserLocker implements LockerInterface
      */
     public function unlock()
     {
-        sem_release($this->semLock);
+        try {
+            sem_release($this->semLock);
+        } catch (\Exception $e) {}
     }
 
     /**

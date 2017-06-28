@@ -62,8 +62,8 @@ class RateRepository extends \Doctrine\ORM\EntityRepository
         $rate = $this->getEntityManager()
             ->getRepository(Rate::class)
             ->findOneBy([
-                'createdAt'  => $date,
-                'currencyId' => $currency,
+                'createdAt' => $date,
+                'currency'  => $currency,
             ]);
 
         return $rate;

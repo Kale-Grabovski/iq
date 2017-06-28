@@ -45,6 +45,7 @@ services:
 
     cbr_parser:
         class: AppBundle\Service\Parser\CbrParser
+        public: true
         arguments:
             - '@guzzle_client'
             - '@xml_parser'
