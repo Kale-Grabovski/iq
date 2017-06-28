@@ -39,7 +39,8 @@ class ParserCommand extends ContainerAwareCommand
         $this
             ->setName('rate:parser')
             ->setDescription('Parse the currency rates')
-            ->addOption('date', null, InputOption::VALUE_REQUIRED, 'Date for which we want to know the rates');
+            ->addOption('date', null, InputOption::VALUE_OPTIONAL,
+                'Date for which we want to know the rates', (new \DateTime)->format('Y-m-d'));
     }
 
     /**
