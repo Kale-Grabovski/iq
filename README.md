@@ -8,11 +8,11 @@ Run migration:
 
 `php bin/console doctrine:migrations:migrate`
 
-Now we are able to run console command to parse the currencies:
+Now we are able to run console command to parse the currencies with optional --date param:
 
 `php bin/console rate:parser --date=2017-03-25`
 
---date param is optional.
+As I understand we should run this command in about 3PM on Moscow time each day.
 
 To run API requests:
 
