@@ -107,8 +107,8 @@ class ApiController extends Controller
     private function getRatesByCodesAndDate(string $fromCode, string $toCode, DateTime $date) : array
     {
         return [
-            $this->entityManager->getRepository(Rate::class)->getByCodeAndDate($fromCode, $date),
-            $this->entityManager->getRepository(Rate::class)->getByCodeAndDate($toCode, $date),
+            $this->getRateByCodeAndDate($fromCode, $date),
+            $this->getRateByCodeAndDate($toCode, $date),
         ];
     }
 
